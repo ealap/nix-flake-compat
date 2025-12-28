@@ -14,19 +14,18 @@ inputs.flake-compat = {
 Afterwards, create a `default.nix` file containing the following:
 
 ```nix
-(import
-  (
-    let
-      lock = builtins.fromJSON (builtins.readFile ./flake.lock);
-      nodeName = lock.nodes.root.inputs.flake-compat;
-    in
-    fetchTarball {
-      url = lock.nodes.${nodeName}.locked.url or "https://github.com/NixOS/flake-compat/archive/${lock.nodes.${nodeName}.locked.rev}.tar.gz";
-      sha256 = lock.nodes.${nodeName}.locked.narHash;
-    }
-  )
-  { src = ./.; }
-).defaultNix
+(import (
+  let
+    lock = builtins.fromJSON (builtins.readFile ./flake.lock);
+    nodeName = lock.nodes.root.inputs.flake-compat;
+  in
+  fetchTarball {
+    url =
+      lock.nodes.${nodeName}.locked.url
+        or "https://github.com/NixOS/flake-compat/archive/${lock.nodes.${nodeName}.locked.rev}.tar.gz";
+    sha256 = lock.nodes.${nodeName}.locked.narHash;
+  }
+) { src = ./.; }).defaultNix
 ```
 
 If you would like a `shell.nix` file, create one containing the above, replacing `defaultNix` with `shellNix`.
